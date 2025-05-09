@@ -28,13 +28,13 @@
 <body>
   <h2>Input Data Penjualan</h2>
   <div id="nmaKasir">
-    <input type="text" id="kasir" placeholder="Nama Kasir">
+    <input type="text" id="kasir" placeholder="Nama Kasir" autocomplete="off">
     <button onclick="simpan()">Simpan</button>
   </div>
 
   <div id="stok" style="display:none">
-    <input type="number" id="stok12" placeholder="Jumlah stok 12 ribu">
-    <input type="number" id="stok10" placeholder="Jumlah stok 10 ribu">
+    <input type="number" id="stok12" placeholder="Jumlah stok 12 ribu" autocomplete="off">
+    <input type="number" id="stok10" placeholder="Jumlah stok 10 ribu" autocomplete="off">
     <button onclick="simpanStok()">Simpan Stok</button>
   </div>
 
@@ -43,8 +43,8 @@
     <p id="infoKasir"></p>
     <p id="stok12k"></p>
     <p id="stok10k"></p>
-    <input type="number" id="jual12" placeholder="Terjual 12 ribu">
-    <input type="number" id="jual10" placeholder="Terjual 10 ribu">
+    <input type="number" id="jual12" placeholder="Terjual 12 ribu"  autocomplete="off">
+    <input type="number" id="jual10" placeholder="Terjual 10 ribu"  autocomplete="off">
     <button onclick="hitungPenjualan()">Hitung</button>
     <button onclick="kirimWA()">Kirim ke WhatsApp</button>
     <button onclick="tambahStok()">Tambah Stok</button>
