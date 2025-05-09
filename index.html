@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aplikasi Penjualan Harian</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+    input, button {
+      padding: 10px;
+      margin-top: 10px;
+      display: block;
+      width: 100%;
+    }
+    #hasil {
+      margin-top: 20px;
+      border-top: 1px solid #ccc;
+      padding-top: 10px;
+      white-space: pre-line;
+    }
+  </style>
+</head>
+<body>
+  <h2>Input Data Penjualan</h2>
+  <div id="nmaKasir">
+    <input type="text" id="kasir" placeholder="Nama Kasir">
+    <button onclick="simpan()">Simpan</button>
+  </div>
+
+  <div id="stok" style="display:none">
+    <input type="number" id="stok12" placeholder="Jumlah stok 12 ribu">
+    <input type="number" id="stok10" placeholder="Jumlah stok 10 ribu">
+    <button onclick="simpanStok()">Simpan Stok</button>
+  </div>
+
+  <div id="penjualan" style="display:none">
+    <h2>Input Penjualan</h2>
+    <p id="infoKasir"></p>
+    <p id="stok12k"></p>
+    <p id="stok10k"></p>
+    <input type="number" id="jual12" placeholder="Terjual 12 ribu">
+    <input type="number" id="jual10" placeholder="Terjual 10 ribu">
+    <button onclick="hitungPenjualan()">Hitung</button>
+    <button onclick="kirimWA()">Kirim ke WhatsApp</button>
+    <button onclick="tambahStok()">Tambah Stok</button>
+    <button onclick="hapusData()">Hapus Data</button>
+  </div>
+
+  <div id="hasil"></div>
+
+  <script>
+    let kasirGlobal = '';
+    let stok12Global = 0;
+    let stok10Global = 0;
+    let stok12Awal = 0;
+    let stok10Awal = 0;
+    let terjual12 = 0;
+    let terjual10 = 0;
+    let hasilRingkasan = '';
+
+    function simpan(){
+      const kasir = document.getElementById('kasir')
+      if (!kasir || kasir == ''){
+        alert('Nama kasir wajib diisi!');
+      }else{
+        document.getElementById('nmaKasir').style.display = 'none';
+        document.getElementById('stok').style.display = 'block';
+        
+      }
+    }
+
+    function hapusData() {
+      const konfirmasi = confirm("Apakah kamu yakin ingin menghapus data?");
+      if (konfirmasi) {
+        localStorage.removeItem('dataPenjualan');
+        location.reload(); // muat ulang halaman supaya tampilannya reset
+      }
+    }
+
+    
+    function tambahStok(){
+      document.getElementById('stok').style.display = 'block';
+      document.getElementById('penjualan').style.display = 'none';
+
+    }
+
+    function simpanStok() {
+      const kasir = document.getElementById('kasir').value.trim();
+      const stok12 = parseInt(document.getElementById('stok12').value || 0);
+      const stok10 = parseInt(document.getElementById('stok10').value || 0);
+
+
+      kasirGlobal = kasir;
+      stok12Global = stok12;
+      stok10Global = stok10;
+      stok12Awal = stok12;
+      stok10Awal = stok10;
+
+      document.getElementById('stok').style.display = 'none';
+      document.getElementById('penjualan').style.display = 'block';
+      document.getElementById('infoKasir').innerText = `Kasir: ${kasirGlobal}`;
+      updateStokDisplay();
+
+      simpanKeStorage();
+    }
+
+    function updateStokDisplay() {
+      document.getElementById('stok12k').innerText = `Stok 12k: ${stok12Global}`;
+      document.getElementById('stok10k').innerText = `Stok 10k: ${stok10Global}`;
+    }
+
+    function hitungPenjualan() {
+      const jual12 = parseInt(document.getElementById('jual12').value || 0);
+      const jual10 = parseInt(document.getElementById('jual10').value || 0);
+
+      if (jual12 > stok12Global || jual10 > stok10Global) {
+        alert('Penjualan melebihi stok!');
+        return;
+      }
+
+      stok12Global -= jual12;
+      stok10Global -= jual10;
+
+      terjual12 += jual12;
+      terjual10 += jual10;
+
+      const total = (terjual12 * 12000) + (terjual10 * 10000);
+
+      hasilRingkasan = 
+`Nama Kasir: ${kasirGlobal}
+Stok:
+- 12rb: ${stok12Awal}
+- 10rb: ${stok10Awal}
+
+Terjual:
+- 12rb: ${terjual12}
+- 10rb: ${terjual10}
+
+Sisa Stok:
+- 12rb: ${stok12Global}
+- 10rb: ${stok10Global}
+
+Total Uang: Rp ${total.toLocaleString('id-ID')}`;
+
+      document.getElementById('hasil').innerText = hasilRingkasan;
+      updateStokDisplay();
+
+      simpanKeStorage();
+    }
+
+    function kirimWA() {
+      if (!hasilRingkasan) return alert('Hitung dulu sebelum kirim WA!');
+      const noWA = '628123456789'; // Ganti dengan nomor kamu
+      const link = `https://wa.me/${noWA}?text=${encodeURIComponent(hasilRingkasan)}`;
+      // window.open(link, '_blank');
+    }
+
+    // Tambahan untuk simpan dan muat dari localStorage
+    function simpanKeStorage() {
+      const data = {
+        kasir: kasirGlobal,
+        stok12: stok12Global,
+        stok10: stok10Global,
+        stok12Awal,
+        stok10Awal,
+        terjual12,
+        terjual10,
+        hasilRingkasan,
+        waktuSimpan: Date.now()
+      };
+      localStorage.setItem('dataPenjualan', JSON.stringify(data));
+    }
+
+    function muatDariStorage() {
+      const data = JSON.parse(localStorage.getItem('dataPenjualan'));
+      if (data) {
+        const sekarang = Date.now();
+        const batasWaktu = 24 * 60 * 60 * 1000;
+
+        if (sekarang - data.waktuSimpan > batasWaktu) {
+
+          localStorage.removeItem('dataPenjualan');
+          alert('Data kadaluarsa, dihapus otomatis.');
+          return;
+        }
+
+        kasirGlobal = data.kasir;
+        stok12Global = data.stok12;
+        stok10Global = data.stok10;
+        stok12Awal = data.stok12Awal;
+        stok10Awal = data.stok10Awal;
+        terjual12 = data.terjual12;
+        terjual10 = data.terjual10;
+        hasilRingkasan = data.hasilRingkasan;
+
+        document.getElementById('infoKasir').innerText = `Kasir: ${kasirGlobal}`;
+        updateStokDisplay();
+        
+      }
+    }
+
+    window.onload = muatDariStorage;
+  </script>
+</body>
+</html>
