@@ -1,5 +1,5 @@
-    let kasirGlobal = '';
-    let stok12Global = 0;
+let kasirGlobal = '';
+let stok12Global = 0;
     let stok10Global = 0;
     let stok12Awal = 0;
     let stok10Awal = 0;
@@ -9,8 +9,8 @@
     let terjual10 = 0;
     let hasilRingkasan = '';
     let sedangTambahStok = false;
-
-
+    
+    
     function simpan(){
       const kasir = document.getElementById('kasir').value.trim();
       if (!kasir || kasir == ''){
@@ -25,14 +25,32 @@
         kasirGlobal = kasir;
       }
     }
+    
+    function penjualan(){
+      document.getElementById('nmaKasir').style.display = 'none';
+      document.getElementById('penjualan').style.display = 'block';
+      document.getElementById('stok').style.display = 'none';
+      document.getElementById('hasil').innerText = hasilRingkasan;
+      
+    }
 
     function hapusData() {
-      const konfirmasi = confirm("Apakah kamu yakin ingin menghapus data?");
-      if (konfirmasi) {
-        localStorage.removeItem('dataPenjualan');
-        location.reload();
-      }
+      Swal.fire({
+        title: 'Hapus Semua Data?',
+        text: 'Data penjualan akan terhapus permanen.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, hapus',
+        cancelButtonText: 'Batal'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          localStorage.removeItem('dataPenjualan');
+          localStorage.removeItem('halaman');
+          location.reload();
+        }
+      });
     }
+
     
     function tambahStok() {
       sedangTambahStok = true;
@@ -113,7 +131,9 @@
       terjual12 += jual12;
       terjual10 += jual10;
 
-      const total = (terjual12 * 12000) + (terjual10 * 10000);
+      const ttl12 = terjual12 * 12000;
+      const ttl10 = terjual10 * 10000;
+      const total = ttl12 + ttl10;
 
       hasilRingkasan = 
 `Nama Kasir: ${kasirGlobal}
@@ -122,8 +142,8 @@ Stok:
 - 10rb: ${stok10Awal} + (${stok10Baru})
 
 Terjual:
-- 12rb: ${terjual12}
-- 10rb: ${terjual10}
+- 12rb: ${terjual12} (${ttl12.toLocaleString('id-ID')})
+- 10rb: ${terjual10} (${ttl10.toLocaleString('id-ID')})
 
 Sisa Stok:
 - 12rb: ${stok12Global}
